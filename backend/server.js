@@ -25,7 +25,16 @@ mongoose.connect(process.env.MONGO_URI, {
 
 // Use the routes
 app.use('/api/todos', todoRoutes);
-app.use('/api/auth', authRoutes)
+app.use('/api/auth', authRoutes);
+
+app.use((err, req, res, next) => {
+  res.status(err.status || 500).json({
+    success: false,
+    message: err.message || "Internal Server Error",
+    data: null
+  });
+});
+
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

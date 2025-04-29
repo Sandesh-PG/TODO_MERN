@@ -1,20 +1,21 @@
-// middleware/authenticate.js
 import jwt from 'jsonwebtoken';
 
-const authenticate = (req, res, next) => {
-    const token = req.headers['authorization'];
-
+const authenticateUser = (req, res, next) => {
+    const token = req.headers['authorization']?.split(' ')[1]; // Assuming Bearer token format
+    
     if (!token) {
-        return res.status(403).json({ success: false, message: "No token provided" });
+        return res.status(403).json({ success: false, message: "Token missing" });
     }
 
-    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-        if (err) {
-            return res.status(403).json({ success: false, message: "Failed to authenticate token" });
-        }
-        req.userId = decoded.userId; // attach user info to request
-        next(); // continue to next middleware/route
-    });
+    try {
+
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        req.userId = decoded.id;
+        next();
+        
+    } catch (err) {
+        return res.status(403).json({ success: false, message: "Invalid token", error: err.message });
+    }
 };
 
-export default authenticate;
+export default authenticateUser;

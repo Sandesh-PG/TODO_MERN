@@ -1,8 +1,6 @@
 import User from "../models/userModel.js";
-import bcrypt from 'bcryptjs'; // for password comparison
-import jwt from 'jsonwebtoken'; // JWT for generating tokens
-
-
+import bcrypt from 'bcryptjs'; 
+import jwt from 'jsonwebtoken'; 
 
 const register = async (req, res) => {
     try {
@@ -17,8 +15,8 @@ const register = async (req, res) => {
             return res.status(400).json({success: false, message: "Email already exists"})
         }
 
-        const salt = await bcrypt.genSalt(10); // Generate salt with 10 rounds of salting
-        const hashedPassword = await bcrypt.hash(req.body.password, salt); // Hash the password
+        const salt = await bcrypt.genSalt(10); 
+        const hashedPassword = await bcrypt.hash(req.body.password, salt); 
 
         const newUser = new User({
             name: req.body.name,
@@ -29,14 +27,21 @@ const register = async (req, res) => {
         await newUser.save();
         newUser.password = undefined;
 
+        const token = jwt.sign(
+            { id: newUser._id }, 
+            process.env.JWT_SECRET, 
+            { expiresIn: "7d" }
+          );
+
         return res.status(201).json({
             success: true,
             message: "User registered successfully",
-            data: newUser
+            data: newUser,
+            token: token
         });
         
     } catch (error) {
-        return res.status(500).json({message: `Something went wrong ${error}`});
+        return res.status(500).json({ success: false, message: `Something went wrong: ${error.message || error}`, data: null });
     }
 }
 
@@ -53,22 +58,27 @@ const login = async (req, res) => {
         if(!isMatch){
             return res.status(400).json({success: false, message: "Password is incorrect."});
         }
-
-        const payload = {
-            userId: user._id,
-            email: user.email
-        }
-
-        const token = jwt.sign(payload, process.env.JWT_SECRET, {expiresIn : '1hr'});
-
+        const token = jwt.sign(
+            { id: user._id }, 
+            process.env.JWT_SECRET, 
+            { expiresIn: "7d" }
+          );
+      
+          user.password = undefined;
         res.status(200).json({
             success: true,
             message: "Login successful",
-            token: token, // Send the token back to the user
+            data: user,
+            token: token, 
         });
     } catch (error) {
-        return res.status(500).json({message: `Something went wrong ${error}`});
+        return res.status(500).json({ success: false, message: `Something went wrong: ${error.message || error}`, data: null });
     }
 }
 
-export { register, login }
+const logout = (req, res) => {
+    res.status(200).json({ success: true, message: "Logged out successfully" });
+};
+
+
+export { register, login, logout }

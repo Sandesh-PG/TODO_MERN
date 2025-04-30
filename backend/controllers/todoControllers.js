@@ -18,7 +18,7 @@ const createTodo = async (req, res) => {
 
 const getAllTodo = async (req, res) => {
     try {
-        const todos = await Todo.find({ userId: req.userId });  // Make sure the query filters by userId
+        const todos = await Todo.find({ userId: req.userId });  
 
         if (!todos || todos.length === 0) {
             return res.status(404).json({ success: false, message: "No todos found for this user", data: null });
@@ -34,7 +34,6 @@ const getAllTodo = async (req, res) => {
         return res.status(500).json({ success: false, message: `Something went wrong: ${error.message || error}`, data: null });
     }
 };
-
 
 const getTodo = async (req, res) => {
     try {

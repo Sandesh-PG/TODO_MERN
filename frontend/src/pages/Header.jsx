@@ -4,12 +4,13 @@ import { useTheme } from "../components/theme-provider.jsx";
 
 const HeaderBar = styled.header`
   width: 100%;
-  background: #111112;
+  background: ${({ theme }) => theme.background};
+  border-bottom: 2px solid ${({ theme }) => theme.border};
+  color: ${({ theme }) => theme.text};
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0.75rem 2rem;
-  border-bottom: 2px solid #fff;
   box-sizing: border-box;
 
   @media (max-width: 600px) {
@@ -41,7 +42,7 @@ const Actions = styled.div`
 const IconButton = styled.button`
   background: none;
   border: none;
-  color: #fff;
+  color: ${({ theme }) => theme.text};
   font-size: 1.3rem;
   cursor: pointer;
   margin-right: 0.5rem;
@@ -85,7 +86,9 @@ const Header = () => {
 
   return (
     <HeaderBar>
-      <Logo>TaskMaster</Logo>
+      <Logo style={{ color: theme === "dark" ? "#fff" : "#222" }}>
+        TaskMaster
+      </Logo>
       <Actions>
         <IconButton
           aria-label="Toggle theme"
@@ -97,7 +100,13 @@ const Header = () => {
         </IconButton>
         {isLoggedIn && (
           <LogoutButton onClick={handleLogout}>
-            <span style={{ display: "flex", alignItems: "center" }}>
+            <span
+              style={{
+                display: "flex",
+                alignItems: "center",
+                color: theme === "dark" ? "#fff" : "#222",
+              }}
+            >
               <svg
                 style={{ marginRight: "0.3rem" }}
                 width="20"

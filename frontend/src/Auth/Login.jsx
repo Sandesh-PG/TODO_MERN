@@ -1,8 +1,11 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { CardContainer, Card, InputBox } from "./FormStyles";
+import { useTheme } from "../components/theme-provider.jsx";
 
 const Login = () => {
+  const { theme } = useTheme();
+
   return (
     <CardContainer>
       <h1
@@ -10,7 +13,7 @@ const Login = () => {
           fontSize: "30px",
           fontWeight: "700",
           textAlign: "center",
-          color: "#fff",
+          color: theme === "dark" ? "#fff" : "#222",
           fontFamily: "sans-serif",
         }}
       >
@@ -75,7 +78,10 @@ const Login = () => {
           >
             Don't have an account?{" "}
             <Link
-              style={{ textDecoration: "none", color: "#fff" }}
+              style={{
+                textDecoration: "none",
+                color: theme === "dark" ? "#fff" : "#222",
+              }}
               to="/signup"
             >
               Sign Up

@@ -3,12 +3,26 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "./Auth/Login.jsx";
 import Signup from "./Auth/Signup.jsx";
 import Dashboard from "./pages/Dashboard";
-import { ThemeProvider } from "./components/theme-provider.jsx";
 import Header from "./pages/Header.jsx";
+
+import { ThemeProvider as StyledThemeProvider } from "styled-components";
+import { ThemeProvider, useTheme } from "./components/theme-provider.jsx";
+import { lightTheme, darkTheme } from "./styles/theme.js";
 
 function App() {
   return (
-    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+    <ThemeProvider>
+      <ThemedApp />
+    </ThemeProvider>
+  );
+}
+
+function ThemedApp() {
+  const { theme } = useTheme();
+  const themeObject = theme === "light" ? lightTheme : darkTheme;
+
+  return (
+    <StyledThemeProvider theme={themeObject}>
       <BrowserRouter>
         <Header />
         <Routes>
@@ -17,7 +31,7 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
         </Routes>
       </BrowserRouter>
-    </ThemeProvider>
+    </StyledThemeProvider>
   );
 }
 

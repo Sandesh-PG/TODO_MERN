@@ -1,10 +1,34 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { CardContainer, Card, InputBox } from "./FormStyles";
 import { useTheme } from "../components/theme-provider.jsx";
+import { useAuth } from "../context/AuthContext.jsx";
 
 const Login = () => {
   const { theme } = useTheme();
+  const { login } = useAuth();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+
+    try {
+      setLoading(true);
+      await login({ email, password });
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 10);
+    } catch (err) {
+      setError(err.message || "Login failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <CardContainer>
@@ -20,10 +44,15 @@ const Login = () => {
         Let’s get things done!
       </h1>
       <Card>
-        <form action="">
+        <form onSubmit={handleSubmit}>
           <InputBox>
             <label htmlFor="email">Email</label>
-            <input type="email" id="email" placeholder="name@example.com" />
+            <input
+              type="email"
+              id="email"
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="name@example.com"
+            />
           </InputBox>
 
           <InputBox>
@@ -51,8 +80,16 @@ const Login = () => {
                 Forgot password?
               </Link>
             </p>
-            <input type="password" id="password" placeholder="" />
+            <input
+              type="password"
+              id="password"
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              placeholder=""
+            />
           </InputBox>
+
+          {error && <div className="error-message">{error}</div>}
 
           <button
             type="submit"
@@ -64,8 +101,9 @@ const Login = () => {
               borderRadius: "8px",
               fontFamily: "sans-serif",
             }}
+            disabled={loading}
           >
-            Login
+            {loading ? "Logging in..." : "Login"}
           </button>
 
           <p

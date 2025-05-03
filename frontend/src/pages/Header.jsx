@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import { useTheme } from "../components/theme-provider.jsx";
+// import { useAuth } from "../context/AuthContext.jsx"; // If using auth context
 
 const HeaderBar = styled.header`
   width: 100%;
@@ -21,7 +22,7 @@ const HeaderBar = styled.header`
 const Logo = styled.div`
   font-size: 1.5rem;
   font-weight: bold;
-  color: #fff;
+  color: ${({ theme }) => theme.text};
   font-family: sans-serif;
 
   @media (max-width: 600px) {
@@ -57,8 +58,8 @@ const IconButton = styled.button`
 
 const LogoutButton = styled.button`
   background: none;
-  border: 1px solid #fff;
-  color: #fff;
+  border: 1px solid ${({ theme }) => theme.border};
+  color: ${({ theme }) => theme.text};
   padding: 0.5rem 1rem;
   border-radius: 6px;
   font-weight: bold;
@@ -76,8 +77,10 @@ const LogoutButton = styled.button`
 
 const Header = () => {
   const { theme, setTheme } = useTheme();
+  // const { user, logout } = useAuth(); // Uncomment if using auth context
 
-  const isLoggedIn = true;
+  // For now, fallback to token check if no context
+  const isLoggedIn = !!localStorage.getItem("token");
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -86,27 +89,19 @@ const Header = () => {
 
   return (
     <HeaderBar>
-      <Logo style={{ color: theme === "dark" ? "#fff" : "#222" }}>
-        TaskMaster
-      </Logo>
+      <Logo>TaskMaster</Logo>
       <Actions>
         <IconButton
           aria-label="Toggle theme"
           onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
         >
-          <span role="img" aria-label="moon">
+          <span role="img" aria-label={theme === "dark" ? "moon" : "sun"}>
             {theme === "dark" ? "🌙" : "☀️"}
           </span>
         </IconButton>
         {isLoggedIn && (
           <LogoutButton onClick={handleLogout}>
-            <span
-              style={{
-                display: "flex",
-                alignItems: "center",
-                color: theme === "dark" ? "#fff" : "#222",
-              }}
-            >
+            <span style={{ display: "flex", alignItems: "center" }}>
               <svg
                 style={{ marginRight: "0.3rem" }}
                 width="20"

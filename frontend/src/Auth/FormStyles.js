@@ -47,3 +47,16 @@ export const InputBox = styled.div`
     border: 1px solid ${({ theme }) => theme.border};
   }
 `;
+
+export const AuthButton = styled.button`
+  width: 100%;
+  padding: 1rem;
+  margin: 0.8rem 0;
+  font-weight: bold;
+  border-radius: 8px;
+  font-family: sans-serif;
+  background: ${({ theme }) => theme.buttonBg};
+  color: ${({ theme }) => theme.buttonText};
+  border: none;
+  cursor: pointer;
+`;

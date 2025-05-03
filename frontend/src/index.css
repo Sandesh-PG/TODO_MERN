@@ -5,4 +5,10 @@ html, body {
     width: 100%;
     box-sizing: border-box;
   }
+
+  .error-message {
+    color: #ff4444;
+    margin: 0.5rem 0;
+    font-size: 0.9rem;
+  }
   

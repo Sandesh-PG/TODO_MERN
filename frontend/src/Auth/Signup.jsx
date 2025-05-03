@@ -1,10 +1,38 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext.jsx";
 import { CardContainer, Card, InputBox } from "./FormStyles";
 import { useTheme } from "../components/theme-provider.jsx";
 
 const Signup = () => {
   const { theme } = useTheme();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const { register } = useAuth();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (password !== confirmPassword) {
+      setError("Passwords don't match");
+      return;
+    }
+
+    setLoading(true);
+    setError("");
+
+    try {
+      await register({ email, password });
+      navigate("/dashboard");
+    } catch (err) {
+      setError(err.message || "Registration failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <CardContainer>
@@ -20,10 +48,15 @@ const Signup = () => {
         Create an account
       </h1>
       <Card>
-        <form action="">
+        <form action="" onSubmit={handleSubmit}>
           <InputBox>
             <label htmlFor="email">Email</label>
-            <input type="email" id="email" placeholder="name@example.com" />
+            <input
+              type="email"
+              id="email"
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="name@example.com"
+            />
           </InputBox>
 
           <InputBox>
@@ -38,7 +71,13 @@ const Signup = () => {
             >
               <label htmlFor="password">Password</label>
             </p>
-            <input type="password" id="password" placeholder="" />
+            <input
+              type="password"
+              id="password"
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder=""
+              required
+            />
           </InputBox>
 
           <InputBox>
@@ -51,10 +90,17 @@ const Signup = () => {
                 marginBottom: "0",
               }}
             >
-              <label htmlFor="password">Confirm Password</label>
+              <label htmlFor="confirm-password">Confirm Password</label>
             </p>
-            <input type="password" id="confirm-password" placeholder="" />
+            <input
+              type="password"
+              id="confirm-password"
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              placeholder=""
+              required
+            />
           </InputBox>
+          {error && <div className="error-message">{error}</div>}
 
           <button
             type="submit"
@@ -67,7 +113,7 @@ const Signup = () => {
               fontFamily: "sans-serif",
             }}
           >
-            Sign Up
+            {loading ? "Signing Up..." : "Sign Up"}
           </button>
 
           <p
